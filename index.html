@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador Z-4 Brasileirão</title>
+  <meta property="og:image" content="https://example.com/imagem-compartilhamento.png">
+  <link rel="icon" href="/football-field.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔮 Simulador Z-4 - Brasileirão Betano</h1>
+    <label for="pontos">Pontos atuais do time:</label>
+    <input type="number" id="pontos" min="0" max="114" placeholder="Ex: 11">
+    <label for="rodada">Rodada atual (1 a 38):</label>
+    <input type="number" id="rodada" min="1" max="38" placeholder="Ex: 9">
+    <button class="shadow__btn" onclick="verificarSituacao()">Verificar situação</button>
+    <div class="resultado" id="resultado"></div>
+    <div class="barra-container">
+      <div class="barra-preenchida" id="barraProjecao" style="width: 0%">0%</div>
+    </div>
+    <div class="detalhes" id="detalhes"></div>
+  </div>
+
+  <script>
+    function verificarSituacao() {
+      const pontos = parseInt(document.getElementById('pontos').value);
+      const rodada = parseInt(document.getElementById('rodada').value);
+      const resultado = document.getElementById('resultado');
+      const detalhes = document.getElementById('detalhes');
+      const barra = document.getElementById('barraProjecao');
+
+      if (isNaN(pontos) || isNaN(rodada) || pontos < 0 || rodada < 1 || rodada > 38) {
+        resultado.textContent = '⚠️ Insira valores válidos: pontos ≥ 0 e rodada entre 1 e 38.';
+        resultado.style.color = '#facc15';
+        detalhes.textContent = '';
+        barra.style.width = '0%';
+        barra.textContent = '0%';
+        return;
+      }
+
+      const aproveitamento = pontos / rodada;
+      const projecaoFinal = Math.round(aproveitamento * 38);
+      const porcentagemProjecao = Math.min(Math.round((projecaoFinal / 45) * 100), 100);
+      const progressoCampeonato = Math.round((rodada / 38) * 100);
+
+      let mensagem = `📊 Projeção: ${projecaoFinal} pontos até o fim do campeonato.\n`;
+      let cor = '';
+
+      if (projecaoFinal <= 38) {
+        mensagem += '💀 Forte risco de rebaixamento!';
+        cor = '#ef4444';
+      } else if (projecaoFinal <= 44) {
+        mensagem += '🚨 Zona de perigo, precisa melhorar urgente!';
+        cor = '#f97316';
+      } else if (projecaoFinal <= 49) {
+        mensagem += '😬 Pode escapar, mas vai ser suado!';
+        cor = '#eab308';
+      } else {
+        mensagem += '✅ Projeção segura. Fora do Z-4!';
+        cor = '#22c55e';
+      }
+
+      resultado.textContent = mensagem;
+      resultado.style.color = cor;
+
+      detalhes.innerHTML = `
+        <strong>📈 Detalhamento da Projeção:</strong><br>
+        - Aproveitamento atual: ${(aproveitamento * 100).toFixed(2)}%<br>
+        - Média de pontos por rodada: ${aproveitamento.toFixed(2)}<br>
+        - Rodadas restantes: ${38 - rodada}<br>
+        - Progresso do campeonato: ${progressoCampeonato}%<br>
+        - Pontuação mínima histórica para escapar do Z-4: 45 pontos<br>
+        - Situação atual: ${pontos} pontos em ${rodada} rodadas
+      `;
+
+      barra.style.width = `${progressoCampeonato}%`;
+      barra.textContent = `${progressoCampeonato}%`;
+      barra.style.backgroundColor = cor;
+    }
+  </script>
+</body>
+</html>
